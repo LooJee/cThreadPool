@@ -4,17 +4,18 @@
 
 #include "threadpool.h"
 
-pThreadPool_T tpInit(int size)
+pThreadPool_T tpNew(int size)
 {
 
 }
 
-void tpSchedule()
+void tpAddTask(pThreadPool_T tpool, pTPTask_T task)
 {
 
 }
 
-void tpDestroy()
+void tpFree(pThreadPool_T tpool)
 {
 
 }
+
