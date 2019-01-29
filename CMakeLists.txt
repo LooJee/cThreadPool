@@ -10,4 +10,4 @@ aux_source_directory(./test DIR_TEST)
 add_compile_options(-g -Wall -std=c99)
 link_libraries(pthread)
 
-add_executable(tpool ${DIR_SRCS} ${DIR_TEST})
+add_executable(tpool ${DIR_SRCS} ${DIR_TEST} test/main.c)

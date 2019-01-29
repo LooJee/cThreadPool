@@ -6,10 +6,13 @@
 #define CTHREADPOOL_THREADPOOL_H
 
 #include <pthread.h>
+#include "common.h"
 
 typedef enum {
     IDLE,
-    BUSY
+    BUSY,
+    READY_EXIT,
+    EXITED
 }THREAD_WORK_STATE_E;
 
 typedef void (*taskFunc)(void *);
@@ -28,22 +31,27 @@ typedef struct qNode_T{
 }queueNode_T, *pQueueNode_T;
 
 typedef struct{
-    pQueueNode_T *head;
-    pQueueNode_T *tail;
-    pthread_mutex_t lock;
+    pQueueNode_T head;
+    pQueueNode_T tail;
+//    pthread_mutex_t lock;
 }queue_T, *pQueue_T;
 
 typedef struct {
     THREAD_WORK_STATE_E state;
     pthread_t           tid;
-    pthread_mutex_t     lock;
+//    pthread_mutex_t     lock;
 }thread_T, *pThread_T;
 
 typedef struct {
     pThread_T *threads;
     pQueue_T queue;
+    int     size;
+    pthread_mutex_t lock;
+    THREAD_WORK_STATE_E status;
 }threadPool_T, *pThreadPool_T;
 
+
+pTPTask_T taskNew(taskFunc task, void *tParam, taskFunc finished, void *fParam);
 pThreadPool_T tpNew(int size);
 void tpAddTask(pThreadPool_T tpool, pTPTask_T task);
 void tpFree(pThreadPool_T tpool);
