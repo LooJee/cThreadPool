@@ -1,2 +1,2 @@
 # cThreadPool
-a thread pool written in c
+a thread pool wrote by c
