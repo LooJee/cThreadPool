@@ -115,7 +115,7 @@ void *threadFunc(void *arg)
     while (tpool->status != READY_EXIT) {
         printf("thread running -- %lu\n", pthread_self());
         pthread_mutex_lock(&tpool->lock);
-        while (tpool->queue->head == NULL) {
+        while (tpool->status != READY_EXIT && tpool->queue->head == NULL) {
             pthread_cond_wait(&tpool->cond, &tpool->lock);
         }
         pQueueNode_T n = queuePop(tpool->queue);
