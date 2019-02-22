@@ -47,6 +47,7 @@ typedef struct {
     pQueue_T queue;
     int     size;
     pthread_mutex_t lock;
+    pthread_cond_t cond;
     THREAD_WORK_STATE_E status;
 }threadPool_T, *pThreadPool_T;
 

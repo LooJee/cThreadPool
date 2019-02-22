@@ -113,7 +113,11 @@ void *threadFunc(void *arg)
     pThreadPool_T tpool = (pThreadPool_T)arg;
 
     while (tpool->status != READY_EXIT) {
+        printf("thread running -- %lu\n", pthread_self());
         pthread_mutex_lock(&tpool->lock);
+        while (tpool->queue->head == NULL) {
+            pthread_cond_wait(&tpool->cond, &tpool->lock);
+        }
         pQueueNode_T n = queuePop(tpool->queue);
         pthread_mutex_unlock(&tpool->lock);
         if (n) {
@@ -189,6 +193,17 @@ pThreadPool_T tpNew(int size)
     }
     tpool->size = 0;
 
+    //init lock
+    if (pthread_mutex_init(&(tpool->lock), NULL) != 0) {
+        tpFree(tpool);
+        return NULL;
+    }
+
+    if (pthread_cond_init(&(tpool->cond), NULL) != 0) {
+        tpFree(tpool);
+        return NULL;
+    }
+
     for (int i = 0; i != size; ++i) {
         tpool->threads[i] = threadNew(tpool);
         if (tpool->threads[i] == NULL) {
@@ -198,12 +213,6 @@ pThreadPool_T tpNew(int size)
         }
         printf("thread : %lu created\n", (unsigned long)(tpool->threads[i]->tid));
         ++tpool->size;
-    }
-
-    //init lock
-    if (pthread_mutex_init(&(tpool->lock), NULL) != 0) {
-        tpFree(tpool);
-        return NULL;
     }
 
     return tpool;
@@ -216,6 +225,7 @@ void tpAddTask(pThreadPool_T tpool, pTPTask_T task)
 {
     pthread_mutex_lock(&(tpool->lock));
     queuePush(tpool->queue, task);
+    pthread_cond_broadcast(&tpool->cond);
     pthread_mutex_unlock(&(tpool->lock));
 }
 
@@ -230,6 +240,7 @@ void tpFree(pThreadPool_T tpool)
 
     tpool->status = READY_EXIT;
 
+    pthread_cond_broadcast(&tpool->cond);
     //free threads
     for (int i = 0; i != tpool->size; ++i) {
         if (tpool->threads[i]) {
@@ -244,5 +255,6 @@ void tpFree(pThreadPool_T tpool)
 
     //free lock
     pthread_mutex_destroy(&(tpool->lock));
+    pthread_cond_destroy(&(tpool->cond));
 }
 

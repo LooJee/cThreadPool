@@ -8,9 +8,12 @@
 
 void tfunc(void *param)
 {
-    int i = (int)param;
-    printf("i = %d from thread -- %lu\n", i, (unsigned long)pthread_self());
-    sleep(1);
+//    int i = (int)param;
+    for (int i = 0; i < 100; ++i) {
+        printf("i = %d from thread -- %lu\n", i, (unsigned long)pthread_self());
+        sleep(1);
+    }
+//    sleep(2);
 }
 
 int main(int argc, char *argv[])
