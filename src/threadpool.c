@@ -12,6 +12,7 @@ pTPTask_T taskNew(taskFunc task, void *tParam, taskFunc finished, void *fParam)
     pTPTask_T t = (pTPTask_T)malloc(sizeof(tpTask_T));
     if (t == NULL) {
         perror("malloc task failed\n");
+        return NULL;
     }
     t->taskCB = task;
     t->taskP = tParam;
