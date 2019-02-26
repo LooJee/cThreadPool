@@ -113,7 +113,7 @@ void *threadFunc(void *arg)
     pThreadPool_T tpool = (pThreadPool_T)arg;
 
     while (tpool->status != READY_EXIT) {
-        printf("thread running -- %lu\n", pthread_self());
+//        printf("thread running -- %lu\n", pthread_self());
         pthread_mutex_lock(&tpool->lock);
         while (tpool->status != READY_EXIT && tpool->queue->head == NULL) {
             pthread_cond_wait(&tpool->cond, &tpool->lock);
